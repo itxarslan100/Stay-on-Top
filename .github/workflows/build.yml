@@ -1,0 +1,33 @@
+name: Build PinToTop.exe
+
+on:
+  push:
+    branches: [ "main" ]
+    paths: [ "src/**", ".github/workflows/build.yml" ]
+  workflow_dispatch:
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile with csc.exe
+        shell: cmd
+        run: |
+          call build.bat < nul
+
+      - name: Upload PinToTop.exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PinToTop
+          path: PinToTop.exe
+
+      - name: Attach exe to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: PinToTop.exe

@@ -37,10 +37,17 @@ build.bat
 
 - Focus any window and press **Ctrl+Alt+T** → it's pinned on top of everything else. Press it again to unpin.
 - Right-click the tray icon (bottom-right of the taskbar, possibly in the "^" hidden icons overflow) for:
-  - Pin/unpin the active window
   - A live list of pinned windows (click one to unpin it)
   - "Start with Windows" toggle
   - About / Exit
+
+Note: pinning/unpinning is only done via the **Ctrl+Alt+T hotkey**, not from
+the tray menu. This is intentional — clicking the tray icon itself forces
+Windows to briefly hand foreground focus to the taskbar (a Windows
+requirement for how tray icon menus behave), so by the time a tray menu item
+would run, "the active window" would actually mean the taskbar itself, not
+whatever you were just working in. The hotkey doesn't have this problem since
+no click on the taskbar is involved.
 
 ## Run automatically at startup
 
