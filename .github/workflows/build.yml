@@ -1,4 +1,4 @@
-name: Build PinToTop.exe
+name: Build StayOnTop.exe
 
 on:
   push:
@@ -20,14 +20,14 @@ jobs:
         run: |
           call build.bat < nul
 
-      - name: Upload PinToTop.exe artifact
+      - name: Upload StayOnTop.exe artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PinToTop
-          path: PinToTop.exe
+          name: StayOnTop
+          path: StayOnTop.exe
 
       - name: Attach exe to release
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: PinToTop.exe
+          files: StayOnTop.exe

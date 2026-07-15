@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title Building Pin To Top...
+title Building Stay on Top...
 
 set "CSC="
 
@@ -24,7 +24,7 @@ if "!CSC!"=="" (
 echo Using compiler: !CSC!
 echo Compiling all sources in src\ ...
 
-"!CSC!" /nologo /target:winexe /out:PinToTop.exe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.dll src\*.cs
+"!CSC!" /nologo /target:winexe /out:StayOnTop.exe /reference:System.Windows.Forms.dll /reference:System.Drawing.dll /reference:System.dll src\*.cs
 
 if errorlevel 1 (
     echo.
@@ -34,6 +34,6 @@ if errorlevel 1 (
 )
 
 echo.
-echo Done! PinToTop.exe has been created in this folder.
-echo Double-click PinToTop.exe to run it. It will sit quietly in your system tray.
+echo Done! StayOnTop.exe has been created in this folder.
+echo Double-click StayOnTop.exe to run it. It will sit quietly in your system tray.
 pause

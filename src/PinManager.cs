@@ -2,23 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PinToTop
+namespace StayOnTop
 {
     /// <summary>
-    /// Pins/unpins windows (toggles the topmost style) and keeps a small
-    /// convenience list of titles for the tray menu.
+    /// Pins/unpins windows (toggles the topmost style) and keeps track of which
+    /// ones are currently pinned for the tray menu's "Pinned windows" list.
     ///
-    /// Important: "is this window pinned" is always answered by asking Windows
-    /// directly (checking the real WS_EX_TOPMOST style), never by trusting our
-    /// own cached bookkeeping. HWNDs get reused by Windows once a window closes,
-    /// so a cache-only approach can end up telling a brand-new, unrelated window
-    /// "you're already pinned" just because some earlier, now-closed window
-    /// happened to have the same handle value. Querying the OS live avoids that
-    /// entirely.
+    /// Pin state is tracked in our own list rather than re-queried live from
+    /// Windows every time, since that turned out to be unreliable in practice.
+    /// The one risk with a cached list is that Windows can reuse a closed
+    /// window's HWND value for a brand-new, unrelated window - we guard
+    /// against that cheaply by remembering each pinned window's title and
+    /// treating a changed title as a sign it's not the same window anymore.
     /// </summary>
     internal class PinManager
     {
-        private readonly HashSet<IntPtr> _pinnedByUs = new HashSet<IntPtr>();
+        private readonly HashSet<IntPtr> _pinned = new HashSet<IntPtr>();
         private readonly Dictionary<IntPtr, string> _titleCache = new Dictionary<IntPtr, string>();
 
         public event Action<IntPtr, bool> PinStateChanged;
@@ -26,7 +25,24 @@ namespace PinToTop
         public bool IsPinned(IntPtr hwnd)
         {
             if (hwnd == IntPtr.Zero || !NativeMethods.IsWindow(hwnd)) return false;
-            return (NativeMethods.GetWindowExStyle(hwnd) & NativeMethods.WS_EX_TOPMOST) != 0;
+            if (!_pinned.Contains(hwnd)) return false;
+
+            // Guard against HWND reuse: if the title has changed since we
+            // pinned it, this is almost certainly a different window that
+            // happens to have inherited the same handle value.
+            string cachedTitle;
+            if (_titleCache.TryGetValue(hwnd, out cachedTitle) && !string.IsNullOrEmpty(cachedTitle))
+            {
+                string currentTitle = NativeMethods.GetWindowTitle(hwnd);
+                if (!string.IsNullOrEmpty(currentTitle) && currentTitle != cachedTitle)
+                {
+                    _pinned.Remove(hwnd);
+                    _titleCache.Remove(hwnd);
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public IEnumerable<KeyValuePair<IntPtr, string>> PinnedWindows
@@ -53,7 +69,7 @@ namespace PinToTop
                 NativeMethods.SWP_NOMOVE | NativeMethods.SWP_NOSIZE |
                 NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_SHOWWINDOW);
 
-            _pinnedByUs.Add(hwnd);
+            _pinned.Add(hwnd);
             _titleCache[hwnd] = NativeMethods.GetWindowTitle(hwnd);
 
             var handler = PinStateChanged;
@@ -66,20 +82,20 @@ namespace PinToTop
                 NativeMethods.SWP_NOMOVE | NativeMethods.SWP_NOSIZE |
                 NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_SHOWWINDOW);
 
-            _pinnedByUs.Remove(hwnd);
+            _pinned.Remove(hwnd);
+            _titleCache.Remove(hwnd);
 
             var handler = PinStateChanged;
             if (handler != null) handler(hwnd, false);
         }
 
-        /// <summary>Call periodically to drop menu entries for windows that closed
-        /// or are no longer actually pinned (e.g. unpinned by some other means).</summary>
+        /// <summary>Call periodically to drop entries for windows that have since been closed.</summary>
         public void PruneClosedWindows()
         {
-            var stale = _pinnedByUs.Where(h => !IsPinned(h)).ToList();
-            foreach (var h in stale)
+            var dead = _pinned.Where(h => !NativeMethods.IsWindow(h)).ToList();
+            foreach (var h in dead)
             {
-                _pinnedByUs.Remove(h);
+                _pinned.Remove(h);
                 _titleCache.Remove(h);
             }
         }

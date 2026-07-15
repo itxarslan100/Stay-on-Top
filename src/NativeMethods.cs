@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace PinToTop
+namespace StayOnTop
 {
     /// <summary>
     /// All raw Win32 API declarations used by the app, kept in one place.

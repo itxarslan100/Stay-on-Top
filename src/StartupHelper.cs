@@ -2,16 +2,16 @@ using System;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
-namespace PinToTop
+namespace StayOnTop
 {
     /// <summary>
-    /// Adds/removes PinToTop from the current user's "Run at startup" registry key,
+    /// Adds/removes StayOnTop from the current user's "Run at startup" registry key,
     /// the same mechanism the Windows Settings > Startup Apps page reads from.
     /// </summary>
     internal static class StartupHelper
     {
         private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
-        private const string ValueName = "PinToTop";
+        private const string ValueName = "StayOnTop";
 
         public static bool IsEnabled()
         {
@@ -51,7 +51,7 @@ namespace PinToTop
             {
                 MessageBox.Show(
                     "Could not update the Windows startup setting:\n" + ex.Message,
-                    "Pin To Top", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Stay on Top", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }

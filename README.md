@@ -1,4 +1,4 @@
-# Pin To Top
+# Stay on Top
 
 A tiny, dependency-free Windows utility that pins any window "always on top"
 via a global hotkey or the system tray menu.
@@ -18,20 +18,20 @@ Windows 10 and 11.
 
 ## Download & run
 
-Grab `PinToTop.exe` from the [Releases](../../releases) page (or the latest
+Grab `StayOnTop.exe` from the [Releases](../../releases) page (or the latest
 [GitHub Actions build artifact](../../actions)) and run it. That's it — a
 single `.exe`, nothing else to install.
 
 ## Build it yourself
 
 ```
-git clone https://github.com/<your-username>/PinToTop.git
-cd PinToTop
+git clone https://github.com/<your-username>/StayOnTop.git
+cd StayOnTop
 build.bat
 ```
 
 `build.bat` finds Windows' built-in C# compiler and compiles everything in
-`src\` into `PinToTop.exe`. No Visual Studio, no .NET SDK install required.
+`src\` into `StayOnTop.exe`. No Visual Studio, no .NET SDK install required.
 
 ## Usage
 

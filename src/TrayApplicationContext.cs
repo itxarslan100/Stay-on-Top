@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace PinToTop
+namespace StayOnTop
 {
     /// <summary>
     /// Hosts the tray icon and the global hotkey. There is no visible main form,
@@ -34,14 +34,14 @@ namespace PinToTop
             _trayIcon = new NotifyIcon
             {
                 Icon = System.Drawing.SystemIcons.Application,
-                Text = "Pin To Top  (Ctrl+Alt+T)",
+                Text = "Stay on Top  (Ctrl+Alt+T)",
                 Visible = true,
                 ContextMenuStrip = BuildMenu()
             };
 
             if (!registered)
             {
-                _trayIcon.ShowBalloonTip(3000, "Pin To Top",
+                _trayIcon.ShowBalloonTip(3000, "Stay on Top",
                     "Ctrl+Alt+T is already used by another program. You can still pin/unpin " +
                     "from this tray icon's right-click menu.", ToolTipIcon.Warning);
             }
@@ -78,9 +78,9 @@ namespace PinToTop
 
             menu.Items.Add(new ToolStripSeparator());
 
-            var aboutItem = new ToolStripMenuItem("About Pin To Top");
+            var aboutItem = new ToolStripMenuItem("About Stay on Top");
             aboutItem.Click += (s, e) => MessageBox.Show(
-                "Pin To Top\n\n" +
+                "Stay on Top\n\n" +
                 "Ctrl+Alt+T pins or unpins the currently focused window so it stays on top " +
                 "of every other window.",
                 "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -127,7 +127,7 @@ namespace PinToTop
             string title = _pinManager.GetCachedTitle(hwnd);
             if (string.IsNullOrEmpty(title)) title = "this window";
 
-            _trayIcon.ShowBalloonTip(1200, "Pin To Top",
+            _trayIcon.ShowBalloonTip(1200, "Stay on Top",
                 (nowPinned ? "Pinned on top: " : "Unpinned: ") + title, ToolTipIcon.Info);
         }
 

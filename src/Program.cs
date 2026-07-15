@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace PinToTop
+namespace StayOnTop
 {
     internal static class Program
     {
