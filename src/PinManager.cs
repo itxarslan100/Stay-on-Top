@@ -47,7 +47,7 @@ namespace StayOnTop
 
         public IEnumerable<KeyValuePair<IntPtr, string>> PinnedWindows
         {
-            get { return _titleCache.Where(kv => IsPinned(kv.Key)); }
+            get { return _titleCache.Where(kv => _pinned.Contains(kv.Key)).ToList(); }
         }
 
         /// <summary>Toggles the pin state of the given window. Returns the new state.</summary>

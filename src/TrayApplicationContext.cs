@@ -46,11 +46,22 @@ namespace StayOnTop
                     "from this tray icon's right-click menu.", ToolTipIcon.Warning);
             }
 
-            // Periodically clean up the "Pinned windows" list (closed windows,
-            // or windows unpinned by some other means).
+            // Keep the "Pinned windows" submenu current the moment anything
+            // actually changes, instead of relying only on the menu's Opening
+            // event (which is one more moving part that could be flaky).
+            _pinManager.PinStateChanged += (hwnd, pinned) => RefreshPinnedList();
+
+            // Periodically clean up the "Pinned windows" list (closed windows)
+            // and, as a third safety net, refresh it too.
             _pruneTimer = new Timer { Interval = 5000 };
-            _pruneTimer.Tick += (s, e) => _pinManager.PruneClosedWindows();
+            _pruneTimer.Tick += (s, e) =>
+            {
+                _pinManager.PruneClosedWindows();
+                RefreshPinnedList();
+            };
             _pruneTimer.Start();
+
+            RefreshPinnedList();
         }
 
         private ContextMenuStrip BuildMenu()
@@ -95,6 +106,8 @@ namespace StayOnTop
 
         private void RefreshPinnedList()
         {
+            if (_pinnedListItem == null) return;
+
             _pinnedListItem.DropDownItems.Clear();
             var pinned = _pinManager.PinnedWindows.ToList();
 
@@ -127,8 +140,11 @@ namespace StayOnTop
             string title = _pinManager.GetCachedTitle(hwnd);
             if (string.IsNullOrEmpty(title)) title = "this window";
 
-            _trayIcon.ShowBalloonTip(1200, "Stay on Top",
-                (nowPinned ? "Pinned on top: " : "Unpinned: ") + title, ToolTipIcon.Info);
+            int totalPinned = _pinManager.PinnedWindows.Count();
+
+            _trayIcon.ShowBalloonTip(1500, "Stay on Top",
+                (nowPinned ? "Pinned on top: " : "Unpinned: ") + title +
+                "  [" + totalPinned + " total pinned]", ToolTipIcon.Info);
         }
 
         private void OnHotkeyPressed()

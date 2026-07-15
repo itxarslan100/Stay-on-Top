@@ -10,10 +10,9 @@ Windows 10 and 11.
 ## Features
 
 - **Global hotkey — Ctrl+Alt+T** — pin/unpin whatever window is currently focused, from anywhere.
-- **System tray icon** — right-click for the full menu; double-click to pin/unpin the active window.
+- **System tray icon** — right-click for the menu.
 - **Pinned windows list** — see everything currently pinned and unpin any of them directly from the tray menu.
 - **Start with Windows** — one checkbox in the tray menu, no manual shortcut needed.
-- **Pin state always matches reality** — "is this pinned?" is answered by asking Windows directly (the real topmost window style), not by a cache that can go stale.
 - **~350 lines of plain C#**, split into small readable files, no external NuGet packages.
 
 ## Download & run
